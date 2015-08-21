@@ -18,8 +18,10 @@ public class VolumeCreator {
 
 	VolumetricSpace volume;
 	VolumetricBrush brush;
+	
 	TriangleMesh mesh;
 	IsoSurface surface; 
+	
 	Vec3D volumeSize;
 	Vec3D dimensions;
 	

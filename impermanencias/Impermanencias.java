@@ -16,8 +16,7 @@ import toxi.geom.*;
 import toxi.geom.mesh.*;
 import toxi.volume.*;
 
-
-public class Impermanencias extends PApplet {
+public class Impermanencias extends PApplet implements ControlListener{
 
 	/**
 	 * 
@@ -40,7 +39,7 @@ public class Impermanencias extends PApplet {
 	int in = 0;
 	int out = 0;
 	
-	ControlListener cb;
+//	ControlListener cb;
 	
 	Slider inSlider; 
 	PImage inFrame;
@@ -57,7 +56,8 @@ public class Impermanencias extends PApplet {
 		log.info("iniciando processing");		
 
 		gfx = new ToxiclibsSupport(this);
-		vp = new VideoPlayer(this, false);		
+		vp = new VideoPlayer(this, false);
+		
 		vp.loadMovie("impermanencias.mov");
 		
 	
@@ -66,39 +66,6 @@ public class Impermanencias extends PApplet {
 		cp5 = new ControlP5(this);
 
 
-		  cb = new ControlListener() {
-			
-			@Override
-			
-			    public void controlEvent(ControlEvent theEvent) {
-			    	println(theEvent);
-//			    	if(theEvent.() != ControlP5.ACTION_RELEASED) return;
-			    	println(theEvent);
-			    	
-			    	if (theEvent.getController().getName().equals("in")) {
-//			    		int frame = (int) theEvent.getController().getValue();
-			    		vp.setFrame(in);
-			    		inFrame = vp.get();
-			    		println("in: " + in);
-			    		
-			    		int last = in + length < vp.getLength() ? in+length : vp.getLength();
-			    		vp.setFrame(last);
-			    		outFrame = vp.get();
-			    		println("last: " + last);
-			    	}
-			    	
-			    	
-			    	if (theEvent.getController().getName().equals("length")) {
-			    		int l = (int) theEvent.getController().getValue();
-			    		int last = in + l < vp.getLength() ? in +l : vp.getLength();
-			    		vp.setFrame(last);
-			    		outFrame = vp.get();		
-			    		println("last: " + last);
-			    	}
-			    }
-			
-			
-		};
 		 Group g1 = cp5.addGroup("g1")
 	                .setPosition(50,260)
 	                .setWidth(400)
@@ -115,7 +82,7 @@ public class Impermanencias extends PApplet {
 		.setWidth(250)
 		.setRange(0,vp.getLength())
 		.setGroup(g1)		
-		.addListener(cb)
+		.addListener(this)
 		;
 
 		
@@ -124,18 +91,19 @@ public class Impermanencias extends PApplet {
 		.setWidth(250)
 		.setRange(0,500)
 		.setGroup(g1)
-		.addListener(cb)
+		.addListener(this)
 		;
-		
-		
 		
 		cp5.addButton("render")
 		.setPosition(10,50)
 		.setGroup(g1);
 	}
 
-	public void render(int theValue){
+	
+	public void render(){
+		
 		println("render");
+		
 		layer = 0;
 		vc = new VolumeCreator(vp.getFrame().width, vp.getFrame().height, 500);//
 		for(int i = in; i < in+length; i++){
@@ -147,7 +115,10 @@ public class Impermanencias extends PApplet {
 		TriangleMesh mesh = vc.generate();
 		println(mesh.getNumFaces());
 		String d = String.valueOf( (new Date()).getTime());
+		println(sketchPath("./"));
 		mesh.saveAsOBJ(sketchPath("test" +d+".obj"));
+		mesh = null;
+		vc = null;
 		
 	}
 
@@ -177,6 +148,8 @@ public class Impermanencias extends PApplet {
 	}
 
 	public void keyPressed() {
+		if(true) return;
+		
 		if(key == ' ') 	{
 			TriangleMesh mesh = vc.generate();
 			println(mesh.getNumFaces());
@@ -187,6 +160,34 @@ public class Impermanencias extends PApplet {
 			layer++;
 		}
 	}
+
+	
+	public void controlEvent(ControlEvent theEvent) {
+    	println(theEvent);
+//    	if(theEvent.() != ControlP5.ACTION_RELEASED) return;
+    	println(theEvent);
+    	
+    	if (theEvent.getController().getName().equals("in")) {
+//    		int frame = (int) theEvent.getController().getValue();
+    		vp.setFrame(in);
+    		inFrame = vp.get();
+    		println("in: " + in);
+    		
+    		int last = in + length < vp.getLength() ? in+length : vp.getLength();
+    		vp.setFrame(last);
+    		outFrame = vp.get();
+    		println("last: " + last);
+    	}
+    	
+    	
+    	if (theEvent.getController().getName().equals("length")) {
+    		int l = (int) theEvent.getController().getValue();
+    		int last = in + l < vp.getLength() ? in +l : vp.getLength();
+    		vp.setFrame(last);
+    		outFrame = vp.get();		
+    		println("last: " + last);
+    	}
+    }
 
 
 }

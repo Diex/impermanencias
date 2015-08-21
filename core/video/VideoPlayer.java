@@ -55,7 +55,10 @@ public class VideoPlayer {
 
 	public void loadMovie(String movieFile){
 		this.movieFile = movieFile;
+		
+		
 		movie = new Movie(parent, movieFile);
+	
 		// Pausing the video at the first frame.		
 		movie.play();
 		movie.jump(0);
